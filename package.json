@@ -13,5 +13,9 @@
   },
   "scripts": {
     "build": "echo \"@_linked/css is a pure CSS package; no build step needed.\""
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.29.8",
+    "@changesets/changelog-github": "^0.5.2"
   }
 }
