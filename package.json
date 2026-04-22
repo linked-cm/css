@@ -10,5 +10,8 @@
   "packageManager": "yarn@3.6.1",
   "publishConfig": {
     "access": "public"
+  },
+  "scripts": {
+    "build": "echo \"@_linked/css is a pure CSS package; no build step needed.\""
   }
 }
