@@ -1,4 +1,11 @@
 {
   "name": "@_linked/css",
+  "version": "0.1.0",
+  "description": "CSS variables, utilities, and theme defaults for the Linked framework",
+  "license": "MIT",
+  "linkedPackage": true,
+  "files": [
+    "*.css"
+  ],
   "packageManager": "yarn@3.6.1"
 }
