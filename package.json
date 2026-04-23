@@ -3,7 +3,6 @@
   "version": "0.1.1",
   "description": "CSS variables, utilities, and theme defaults for the Linked framework",
   "license": "MIT",
-  "linkedPackage": true,
   "files": [
     "*.css"
   ],
@@ -15,7 +14,7 @@
     "build": "echo \"@_linked/css is a pure CSS package; no build step needed.\""
   },
   "devDependencies": {
-    "@changesets/cli": "^2.29.8",
-    "@changesets/changelog-github": "^0.5.2"
+    "@changesets/changelog-github": "^0.5.2",
+    "@changesets/cli": "^2.29.8"
   }
 }
