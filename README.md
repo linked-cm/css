@@ -10,6 +10,7 @@ This is a **CSS-only asset package** — no JavaScript, no build step. It ships 
 
 | File | Purpose |
 |---|---|
+| [`preflight.css`](./preflight.css) | Tailwind-derived preflight with `:not()` exclusions to preserve inline element styles (`<span>`, `<a>`, `<b>`, `<em>`, `<code>`, etc.). Apps using `@_linked/css` typically import this *instead of* the bundled Tailwind preflight via the split-import pattern (see below). |
 | [`package.css`](./package.css) | Tailwind v4 `@theme` registration of `--spacing: 0.25rem`. Import this from any module CSS file that uses Tailwind v4's `--spacing(N)` function. |
 | [`theme-defaults.css`](./theme-defaults.css) | Component-first semantic tokens (`--card-bg`, `--popover-bg`, `--modal-shadow`, etc.) for ~15 Linked component groups + Tailwind `@theme static` palette + `@source inline()` safelists. Import this from your app theme. |
 | [`utilities.css`](./utilities.css) | Tailwind v4 `@utility` mixins for layout primitives — `surface-base`, `card-base`, `modal-base`, `popover-base`, `section-base`, `element-base`. Import this from your app theme alongside `theme-defaults.css`. |
@@ -19,12 +20,13 @@ This is a **CSS-only asset package** — no JavaScript, no build step. It ships 
 
 ## Recommended import order
 
-In your app's main theme file (e.g. `src/scss/theme.css`):
+In your app's main theme file (e.g. `src/css/theme.css`):
 
 ```css
-/* 1. Tailwind v4 layers */
+/* 1. Tailwind v4 layers — split-import pattern to substitute the LINCD preflight */
 @layer theme, base, components, utilities;
 @import 'tailwindcss/theme.css' layer(theme);
+@import '@_linked/css/preflight.css';            /* substitutes Tailwind's bundled preflight */
 @import 'tailwindcss/utilities.css' layer(utilities);
 
 /* 2. Tailwind config (provides Linked component content paths) */
@@ -46,6 +48,8 @@ In your app's main theme file (e.g. `src/scss/theme.css`):
   /* ... */
 }
 ```
+
+**Why the split-import?** The shorthand `@import 'tailwindcss';` brings in Tailwind's *bundled* preflight, which uses a bare `*, ::before, ::after` reset that wipes inline element styles (`<b>`, `<em>`, `<span>`, `<a>`, `<code>`, etc.). For app shells rendering rich content (chatbot messages, ontology descriptions, markdown-derived text), that reset is too aggressive. `@_linked/css/preflight.css` is the same Tailwind preflight minus the inline-element wipe, exposed via `:not()` exclusions on the universal selector. Importing the layers separately lets us substitute the LINCD-friendly preflight in.
 
 In a Linked component package's module CSS (e.g. `Toggle.module.css`):
 
