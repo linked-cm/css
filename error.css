@@ -1,0 +1,18 @@
+/* ============================================================================
+   Default error styling used by @_linked/react's built-in error element.
+   Apps override .ld-error to brand the icon, or replace it entirely via
+   LinkedComponentDefaults.errorElement (or per-instance `errorElement` prop).
+   ============================================================================ */
+
+.ld-error {
+  width: 1.25em;
+  height: 1.25em;
+  color: var(--color-error);
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.ld-error line {
+  stroke-width: 2;
+  stroke-linecap: round;
+}

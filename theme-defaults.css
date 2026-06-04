@@ -4,6 +4,10 @@
    Alternatively, you can define all your own theme variables in your own theme.css file.
    ============================================================================ */
 
+/* Default styling for @_linked/react's built-in loader and error elements. */
+@import './loader.css';
+@import './error.css';
+
 /* Safelist primary, secondary, and tertiary colors for theme showcase (Tailwind v4 approach) */
 @source inline("bg-primary-{50,{100..900..100},950}");
 @source inline("text-primary-{50,{100..900..100},950}");
@@ -71,6 +75,9 @@
     --color-tertiary-700: var(--color-cyan-700);
     --color-tertiary-800: var(--color-cyan-800);
     --color-tertiary-900: var(--color-cyan-900);
+
+    /* Semantic color for failure states (used by .ld-error). */
+    --color-error: var(--color-red-500);
 
     /* === Base Spacing Unit (required for --spacing() function) === */
     --spacing: 0.25rem; /* 4px - base unit for --spacing() function */

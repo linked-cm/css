@@ -1,0 +1,61 @@
+/* ============================================================================
+   Default loader styling used by @_linked/react's built-in loading element.
+   Apps override .ld-loader (size, color, animation) to brand the loader, or
+   replace the element entirely via LinkedComponentDefaults.loader.
+   ============================================================================ */
+
+.ld-loader {
+  width: 1.5em;
+  height: 1.5em;
+  color: var(--color-gray-500);
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.ld-loader__track {
+  stroke-width: 2;
+  opacity: 0.2;
+}
+
+.ld-loader__arc {
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 56.5;       /* approx 2*PI*9 */
+  stroke-dashoffset: 42.4;       /* leaves a 25% visible arc */
+  transform-origin: center;
+  animation: ld-loader-spin 900ms linear infinite;
+}
+
+@keyframes ld-loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Opt-in branded infinity loader: import LinkedInfinityLoader from
+   @_linked/react and set it as the app-wide loader. */
+.ld-loader--infinity {
+  width: 3em;
+  height: 1.5em;
+  color: var(--color-primary-500);
+}
+
+.ld-loader--infinity path {
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 160;
+  stroke-dashoffset: 160;
+  animation: ld-loader-infinity-trace 2400ms ease-in-out infinite;
+}
+
+@keyframes ld-loader-infinity-trace {
+  0% {
+    stroke-dashoffset: 160;
+  }
+  50% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -160;
+  }
+}
