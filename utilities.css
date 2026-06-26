@@ -6,7 +6,7 @@
    For example, we can use the card-base utility to set the background color, border radius, and shadow of the card.
    ============================================================================ */
 
-/* === Component Base Utilities (mixins via @apply) === */
+/* === Component Base Utilities (Tailwind v4 @utility mixins) === */
 @utility surface-base {
   background: var(--bg-page);
   border-radius: var(--radius-surface);

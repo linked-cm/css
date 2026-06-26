@@ -1,6 +1,6 @@
 {
   "name": "@_linked/css",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "CSS variables, utilities, and theme defaults for the Linked framework",
   "license": "MIT",
   "files": [
@@ -12,6 +12,9 @@
   },
   "scripts": {
     "build": "echo \"@_linked/css is a pure CSS package; no build step needed.\""
+  },
+  "peerDependencies": {
+    "tailwindcss": "^4"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.2",
