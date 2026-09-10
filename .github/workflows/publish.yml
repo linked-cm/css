@@ -38,23 +38,67 @@ jobs:
           node-version: 22.16.0
           registry-url: "https://registry.npmjs.org"
 
+      # `npm stage` landed in CLI 11.15.0; Node 22.16 ships npm 10.x, so the bundled one
+      # cannot stage. Pinned rather than `@latest` so a future npm release cannot change how
+      # releases behave without a commit here.
+      - name: Use an npm that can stage
+        run: npm i -g npm@^11.15.0
+
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
 
       - name: Build
         run: npm run build
 
-      - name: Create release Pull Request or Publish
+      # No `publish:` — changesets only opens/updates the version PR. `changeset publish`
+      # shells out to `npm publish`, which a stage-only token cannot do
+      # (changesets/changesets#2025 is open for first-class support).
+      - name: Create release Pull Request
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: npx changeset publish
           title: "chore: release"
           commit: "chore: release"
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      # Stage the stable release for a maintainer to approve with 2FA. Idempotent: this
+      # workflow runs on every push to main, so it must do nothing when the version is
+      # already published or already queued.
+      - name: Stage the release for approval
+        if: steps.changesets.outputs.hasChangesets != 'true'
+        env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+        run: |
+          set -euo pipefail
+          name=$(node -p "require('./package.json').name")
+          version=$(node -p "require('./package.json').version")
+
+          if npm view "$name@$version" version >/dev/null 2>&1; then
+            echo "$name@$version is already on the registry — nothing to do."; exit 0
+          fi
+          if npm stage list "$name" 2>/dev/null | grep -q "$version"; then
+            echo "$name@$version is already staged and waiting for approval."; exit 0
+          fi
+
+          echo "Staging $name@$version…"
+          npm stage publish --access public --provenance
+
+          {
+            echo "### 📦 \`$name@$version\` is staged, not published"
+            echo
+            echo "It is uploaded and held for review. **Approve it to make it public:**"
+            echo
+            echo "- **CLI:** \`npm stage approve $name@$version\`"
+            echo "- **Web:** [npmjs.com](https://www.npmjs.com) → your avatar → **Staged"
+            echo "  Packages** → **Approve**. The button stays disabled until npm has"
+            echo "  finished scanning the tarball; the page refreshes every minute."
+            echo
+            echo "Both prompt for 2FA."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          echo "::notice title=Approval needed::$name@$version is staged. Run: npm stage approve $name@$version — or approve it from Staged Packages in the npm user menu."
 
   backmerge-to-dev:
     # Full back-merge of main into dev after a release. Unlike a version-only sync, this also
@@ -123,13 +167,19 @@ jobs:
           node-version: 22.16.0
           registry-url: "https://registry.npmjs.org"
 
+      # `npm stage` landed in CLI 11.15.0; Node 22.16 ships npm 10.x, so the bundled one
+      # cannot stage. Pinned rather than `@latest` so a future npm release cannot change how
+      # releases behave without a commit here.
+      - name: Use an npm that can stage
+        run: npm i -g npm@^11.15.0
+
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
 
       - name: Build
         run: npm run build
 
-      - name: Publish next release
+      - name: Stage next prerelease for approval
         run: |
           # Start from main's version so changesets apply on top of the latest stable
           git fetch origin main --depth=1
@@ -141,7 +191,14 @@ jobs:
           # Append dev prerelease identifier
           DEV_VERSION="${NEXT_VERSION}-next.$(date +%Y%m%d%H%M%S)"
           npm version "$DEV_VERSION" --no-git-tag-version
-          npm publish --tag next
+          # Staged, like the stable release — a prerelease is still installable code, and the
+          # token cannot publish directly either way.
+          #
+          # NOTE: this means every push to `dev` queues a prerelease for manual approval. If
+          # that becomes noise, the honest fix is to stop cutting a prerelease per push —
+          # move this job to `workflow_dispatch` — rather than to weaken the gate.
+          npm stage publish --tag next --access public --provenance
+          echo "::notice title=Approval needed::$DEV_VERSION is staged. Run: npm stage approve $(node -p "require('./package.json').name")@$DEV_VERSION"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
