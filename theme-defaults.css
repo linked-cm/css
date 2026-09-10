@@ -141,6 +141,33 @@
    ============================================================================ */
 
 :root {
+  /* === Named Spacing Scale ===
+     A named step on the spacing grid, as a plain custom property.
+
+     The theme already expresses spacing as Tailwind's `--spacing()` FUNCTION, but that is
+     resolved at compile time and needs the theme in scope, so a CSS module compiled on its
+     own fails with "the --spacing theme variable was not found". Anything shipped as a
+     standalone stylesheet — a CSS module in a package, a consumer's own sheet — therefore
+     cannot use it, and every such package ends up defining its own private scale. Naming
+     the steps here resolves them once, and `var(--space-md)` works anywhere.
+
+     The steps are the ones Create Now converged on, so this adopts a scale that is already
+     load-bearing rather than proposing a new one. The `-plus` members are the half-steps
+     that come up constantly in dense UI (a 10px gap where 8 is tight and 12 is loose);
+     they are deliberately kept rather than rounded away, because rounding them is what
+     made packages define their own scale in the first place. */
+  --space-2xs: --spacing(0.5); /* 2px */
+  --space-xs: --spacing(1); /* 4px */
+  --space-xs-plus: --spacing(1.5); /* 6px */
+  --space-sm: --spacing(2); /* 8px */
+  --space-sm-plus: --spacing(2.5); /* 10px */
+  --space-md: --spacing(3); /* 12px */
+  --space-md-plus: --spacing(3.5); /* 14px */
+  --space-lg: --spacing(4); /* 16px */
+  --space-xl: --spacing(6); /* 24px */
+  --space-2xl: --spacing(8); /* 32px */
+  --space-3xl: --spacing(10); /* 40px */
+
   /* === Global Layer Tokens === */
   --layer-base: 0;
   --layer-surface: 10;

@@ -209,6 +209,34 @@ export function DeveloperCard() {
 }
 ```
 
+### Spacing in a standalone stylesheet
+
+Tailwind's `--spacing()` is a compile-time function: it needs the theme in scope, so a CSS
+module built on its own fails with *"the --spacing theme variable was not found"*. That rules
+it out for anything shipped as its own stylesheet — a CSS module inside a package, or a
+consumer's sheet that does not import the theme first.
+
+Use the named scale instead. It is the same grid, already resolved, so it works anywhere:
+
+```css
+/* Not in a standalone module — --spacing() is compile-time */
+.row { gap: --spacing(3); }
+
+/* Anywhere */
+.row { gap: var(--space-md); }
+```
+
+| Token | | Token | | Token | |
+|---|---|---|---|---|---|
+| `--space-2xs` | 2px | `--space-sm-plus` | 10px | `--space-lg` | 16px |
+| `--space-xs` | 4px | `--space-md` | 12px | `--space-xl` | 24px |
+| `--space-xs-plus` | 6px | `--space-md-plus` | 14px | `--space-2xl` | 32px |
+| `--space-sm` | 8px | | | `--space-3xl` | 40px |
+
+The `-plus` steps are the half-steps dense UI keeps needing. Reach for a named step before
+defining a spacing token of your own — a package-local scale is the fragmentation this
+document exists to prevent.
+
 ### Override Levels
 
 There are four practical places to customize styling, from broadest to most specific:
