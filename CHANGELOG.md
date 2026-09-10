@@ -1,5 +1,50 @@
 # @\_linked/css
 
+## 0.3.0
+
+### Minor Changes
+
+- [#11](https://github.com/linked-cm/css/pull/11) [`8147b14`](https://github.com/linked-cm/css/commit/8147b14c6a0dc95d6fc440036e451c22eb55ae97) Thanks [@flyon](https://github.com/flyon)! - Adds two token families the theme was missing, both because a consuming package had to
+  invent them locally — which is the fragmentation `docs/styling-and-themes.md` warns against.
+
+  **`--intent-{danger,success,warning,info}-{bg,bg-subtle,border,icon,text}`** — severity, for
+  any component that needs it. This is the axis `--notification-*` cannot express: those
+  tokens describe a container (padding, radius, shadow, one accent), not how serious the thing
+  inside it is. Kept separate rather than folded in, because a form field showing a validation
+  error is not a notification but it is `danger`. `-bg` is a solid tint; `-bg-subtle` is
+  transparent so it composes over whatever is behind it; `-icon` is a step stronger than
+  `-text` because an icon carries less area and needs more contrast to read at the same
+  weight.
+
+  **`--table-{header-bg,header-text,header-border,row-bg,row-bg-hover,row-border,cell-text,cell-text-primary}`**
+  — the one composite component family the set was missing, alongside `--list-item-*`,
+  `--modal-*`, `--navigation-*` and `--selector-*`. A list has no header row and no
+  cell/row distinction, so a table cannot borrow `--list-item-*`. Two text tokens on purpose:
+  `--table-cell-text` is the default cell weight and `--table-cell-text-primary` is the
+  identifying column, which wants more contrast because it is what a reader scans down.
+
+- [#12](https://github.com/linked-cm/css/pull/12) [`6b32141`](https://github.com/linked-cm/css/commit/6b321415fe65c9339bb3d4c1979ee30e0d157043) Thanks [@flyon](https://github.com/flyon)! - Add a named spacing scale: `--space-2xs` through `--space-3xl`.
+
+  `--spacing()` is a compile-time function, so it needs the theme in scope. Any stylesheet
+  compiled on its own — a CSS module inside a package, a consumer's own sheet — fails with
+  "the --spacing theme variable was not found" and cannot use it at all. The workaround every
+  such package reaches for is a private spacing scale, which is precisely the fragmentation
+  `docs/styling-and-themes.md` warns against.
+
+  Naming the steps resolves them once, at theme build time, so `var(--space-md)` works
+  anywhere. The steps are the ones Create Now already uses, so this adopts a scale that is
+  load-bearing rather than proposing a new one. The `-plus` half-steps are kept rather than
+  rounded away: rounding them is what sends packages off to define their own scale.
+
+### Patch Changes
+
+- [#13](https://github.com/linked-cm/css/pull/13) [`f14c9e4`](https://github.com/linked-cm/css/commit/f14c9e4a39a4a155c15f4e6509de84b23ecc93d9) Thanks [@flyon](https://github.com/flyon)! - Stop naming a specific application in the theme.
+
+  A framework package should not name one of its consumers — a reader of the token
+  documentation has no way to know what that application is, and it implies the tokens exist
+  to serve it rather than the other way round. The spacing-scale comment and one line of the
+  styling guide are reworded to describe the tokens on their own terms.
+
 ## 0.2.0
 
 ### Minor Changes
