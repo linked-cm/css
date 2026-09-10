@@ -274,6 +274,27 @@
   --list-item-radius: var(--radius-list-item);
   --list-item-shadow: var(--shadow-list-item);
 
+  /* Table - data grids
+     ------------------------------------------------------------------------
+     The composite component the set above was missing. `--list-item-*` covers a vertical
+     list; a table adds a header row and a cell/row distinction that a list has no place
+     for, so it needs its own family rather than borrowing one.
+
+     Two text tokens on purpose. `--table-cell-text` is the default weight for a cell, and
+     `--table-cell-text-primary` is the identifying column — usually the first — which
+     wants more contrast because it is what a reader scans down. The header is quieter than
+     both: it labels, it does not carry data — quieter than `--text-auxiliary`, which is
+     why it reaches for the grey primitive directly rather than a semantic token that would
+     misname it (`--text-disabled` is the right shade and the wrong meaning). */
+  --table-header-bg: var(--surface-bg);
+  --table-header-text: var(--color-gray-400);
+  --table-header-border: var(--color-gray-100);
+  --table-row-bg: var(--surface-bg);
+  --table-row-bg-hover: var(--color-gray-50);
+  --table-row-border: var(--color-gray-100);
+  --table-cell-text: var(--text-auxiliary);
+  --table-cell-text-primary: var(--text-primary);
+
   /* Control - Buttons, IconButtons, Toggles, ToggleGroups */
   --control-bg: var(--color-gray-100);
   --control-bg-hover: var(--color-gray-200);
@@ -389,6 +410,44 @@
   --notification-gap: --spacing(3);
   --notification-radius: var(--radius-notification);
   --notification-shadow: var(--shadow-notification);
+
+  /* Intent - severity, for any component that needs it
+     ------------------------------------------------------------------------
+     The axis `--notification-*` has no way to express. Those tokens describe a
+     container (padding, radius, shadow, one accent); these describe how serious the
+     thing inside it is, and any component can use them — a toast, an inline field
+     error, a callout, a destructive confirm.
+
+     Kept separate rather than folded into notification for that reason: a form field
+     showing a validation error is not a notification, but it is `danger`.
+
+     `-bg` is a solid tint for a filled surface; `-bg-subtle` is transparent, so it
+     composes over whatever is behind it without a second colour decision. `-icon` is
+     deliberately a step stronger than `-text`: an icon carries less area and needs more
+     contrast to read at the same weight. */
+  --intent-danger-bg: var(--color-red-50);
+  --intent-danger-bg-subtle: color-mix(in srgb, var(--color-red-500) 8%, transparent);
+  --intent-danger-border: var(--color-red-200);
+  --intent-danger-text: var(--color-red-700);
+  --intent-danger-icon: var(--color-red-500);
+
+  --intent-success-bg: var(--color-emerald-50);
+  --intent-success-bg-subtle: color-mix(in srgb, var(--color-emerald-500) 8%, transparent);
+  --intent-success-border: var(--color-emerald-200);
+  --intent-success-text: var(--color-emerald-700);
+  --intent-success-icon: var(--color-emerald-500);
+
+  --intent-warning-bg: var(--color-amber-50);
+  --intent-warning-bg-subtle: color-mix(in srgb, var(--color-amber-500) 8%, transparent);
+  --intent-warning-border: var(--color-amber-200);
+  --intent-warning-text: var(--color-amber-700);
+  --intent-warning-icon: var(--color-amber-500);
+
+  --intent-info-bg: var(--color-blue-50);
+  --intent-info-bg-subtle: color-mix(in srgb, var(--color-blue-500) 8%, transparent);
+  --intent-info-border: var(--color-blue-200);
+  --intent-info-text: var(--color-blue-700);
+  --intent-info-icon: var(--color-blue-500);
 
   /* Meter - Progress bars */
   --meter-track-bg: var(--color-gray-200);
