@@ -151,8 +151,9 @@
      cannot use it, and every such package ends up defining its own private scale. Naming
      the steps here resolves them once, and `var(--space-md)` works anywhere.
 
-     The steps are the ones Create Now converged on, so this adopts a scale that is already
-     load-bearing rather than proposing a new one. The `-plus` members are the half-steps
+     The steps are the ones already in use across thousands of declarations in the apps
+     built on this theme, so this adopts a load-bearing scale rather than proposing a new
+     one. The `-plus` members are the half-steps
      that come up constantly in dense UI (a 10px gap where 8 is tight and 12 is loose);
      they are deliberately kept rather than rounded away, because rounding them is what
      made packages define their own scale in the first place. */

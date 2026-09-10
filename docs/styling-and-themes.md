@@ -196,7 +196,7 @@ Apps can then override these in their theme:
 
 ### Using Tailwind Utilities Directly
 
-While CN generates CSS classes, developers can use Tailwind utility classes directly in their code:
+Alongside the generated CSS classes, Tailwind utility classes can be used directly:
 
 ```tsx
 export function DeveloperCard() {
