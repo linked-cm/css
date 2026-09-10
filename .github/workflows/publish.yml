@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - dev
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -16,6 +15,10 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      # `--provenance` signs the tarball with a GitHub OIDC token, so the job must be able to
+      # mint one. This does NOT switch the package to OIDC trusted publishing — authentication
+      # is still the org npm token.
+      id-token: write
     steps:
       # Author the changesets "Version Packages" PR as the org release App (not the default
       # GITHUB_TOKEN) so its CI runs without a manual "Approve and run" gate. Requires the org
@@ -150,56 +153,3 @@ jobs:
           # Auto-merge once required checks pass (needs "Allow auto-merge" enabled on the repo).
           gh pr merge "$pr" --auto --merge \
             || echo "Auto-merge unavailable (disabled or conflicts) — PR #$pr left open for manual merge."
-
-  dev-release:
-    name: Publish Dev Release
-    if: github.ref == 'refs/heads/dev'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.16.0
-          registry-url: "https://registry.npmjs.org"
-
-      # `npm stage` landed in CLI 11.15.0; Node 22.16 ships npm 10.x, so the bundled one
-      # cannot stage. Pinned rather than `@latest` so a future npm release cannot change how
-      # releases behave without a commit here.
-      - name: Use an npm that can stage
-        run: npm i -g npm@^11.15.0
-
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
-
-      - name: Build
-        run: npm run build
-
-      - name: Stage next prerelease for approval
-        run: |
-          # Start from main's version so changesets apply on top of the latest stable
-          git fetch origin main --depth=1
-          MAIN_VERSION=$(git show origin/main:package.json | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).version")
-          npm version "$MAIN_VERSION" --no-git-tag-version --allow-same-version
-          # Apply pending changesets to get the next version
-          npx changeset version
-          NEXT_VERSION=$(node -p "require('./package.json').version")
-          # Append dev prerelease identifier
-          DEV_VERSION="${NEXT_VERSION}-next.$(date +%Y%m%d%H%M%S)"
-          npm version "$DEV_VERSION" --no-git-tag-version
-          # Staged, like the stable release — a prerelease is still installable code, and the
-          # token cannot publish directly either way.
-          #
-          # NOTE: this means every push to `dev` queues a prerelease for manual approval. If
-          # that becomes noise, the honest fix is to stop cutting a prerelease per push —
-          # move this job to `workflow_dispatch` — rather than to weaken the gate.
-          npm stage publish --tag next --access public --provenance
-          echo "::notice title=Approval needed::$DEV_VERSION is staged. Run: npm stage approve $(node -p "require('./package.json').name")@$DEV_VERSION"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
